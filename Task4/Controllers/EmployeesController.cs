@@ -44,6 +44,10 @@ namespace Task4.Controllers
 
             var employee = await _context.Employees.Include(e => e.Projects)
                 .FirstOrDefaultAsync(m => m.EmployeeId == id);
+
+            var projects = await _context.Projects.Where(e => e.EmployeeId == null).ToListAsync();
+
+            ViewBag.MyList = new SelectList(projects, "Id", "Name");
             if (employee == null)
             {
                 return NotFound();
@@ -173,12 +177,17 @@ namespace Task4.Controllers
 
         [HttpPost, ActionName("AddProject")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddProject(int id, int employeeId)
+        public async Task<IActionResult> AddProject(int employeeId)
         {
-            var projects = await _context.Projects.Where(e => e.EmployeeId == null).ToListAsync();
-            
 
-            return Redirect($"../Details/{employeeId}");
+            int projectID = Convert.ToInt32(Request.Form["ProjId"]);
+
+            var project = await _context.Projects.FindAsync(projectID);
+            project.EmployeeId = employeeId;
+            _context.Update(project);
+            await _context.SaveChangesAsync();
+
+            return Redirect($"Details/{employeeId}");
         }
     }
 }
