@@ -13,6 +13,7 @@ namespace Task4.Models
             this.FullName = e.FullName;
             this.EmployeeId = e.EmployeeId;
             this.Projects = e.Projects;
+            this.Position = e.Position;
         }
 
         public int PremiumSum { get; set; }
